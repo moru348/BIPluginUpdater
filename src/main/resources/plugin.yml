@@ -1,0 +1,17 @@
+name: BIPluginUpdater
+version: @version@
+main: dev.moru3.bipluginupdater.BIPluginUpdater
+api-version: 1.15
+description: reloadをせずにプラグインをアップデートできます。
+softdepend:
+  - PlugMan
+permissions:
+  bipluginupdater.admin:
+    default: op
+commands:
+  bipluginupdate:
+    aliases:
+      - updater
+      - pluginupdate
+      - biplupdate
+    permission: bipluginupdater.admin
