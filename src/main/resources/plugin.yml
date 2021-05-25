@@ -9,7 +9,7 @@ permissions:
   bipluginupdater.admin:
     default: op
 commands:
-  bipluginupdate:
+  bipluginupdater:
     aliases:
       - updater
       - pluginupdate

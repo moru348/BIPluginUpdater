@@ -1,9 +1,2 @@
 github:
   token: null
-discord:
-  bot:
-    token: null
-  manage_channel: -1
-  channels:
-    - -1
-    - -1

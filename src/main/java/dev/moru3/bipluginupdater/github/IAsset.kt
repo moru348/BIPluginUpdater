@@ -8,7 +8,7 @@ interface IAsset {
     val id: Int
     val nodeId: String
     val name: String
-    val label: String
+    val label: String?
     val contentsType: String
     val state: String
     val size: Long

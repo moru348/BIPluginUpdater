@@ -1,12 +1,13 @@
 package dev.moru3.bipluginupdater.github
 
 import com.google.gson.Gson
+import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-class GitHubReleaseUtil(val user: String, val repo: String, val token: String, val latestOnly: Boolean = false) {
-    var url = "https://github.com/$user/$repo/releases"
+class GitHubReleaseUtil(user: String, repo: String, val token: String, latestOnly: Boolean = false) {
+    var url = "https://api.github.com/repos/$user/$repo/releases"
     val releases = mutableListOf<IRelease>()
 
     init {
@@ -23,9 +24,9 @@ class GitHubReleaseUtil(val user: String, val repo: String, val token: String, v
                 throw IllegalArgumentException("URLが間違っている、リリース存在しない、もしくはreleasesにプレリリースしかありません。")
             }
             200 -> {
-                val json = Gson().fromJson(response.body.toString(), JsonObject::class.java)
+                val json = Gson().fromJson(response.body?.string()?:throw IllegalArgumentException("レスポンスが変。"), JsonObject::class.java)
                 if(json.size()==0) { throw IllegalArgumentException("$url にはリリースがありません。") }
-                json.asJsonArray.forEach {
+                json.run { if(latestOnly) mutableListOf(this) else this.asJsonArray }.forEach {
                     val obj = it.asJsonObject
                     val assets = mutableListOf<Asset>()
                     obj.get("assets").asJsonArray.forEach {
@@ -36,7 +37,7 @@ class GitHubReleaseUtil(val user: String, val repo: String, val token: String, v
                             id = objc.get("id").asInt,
                             nodeId = objc.get("node_id").asString,
                             name = objc.get("name").asString,
-                            label = objc.get("label").asString,
+                            label = if(objc.get("label")!=JsonNull.INSTANCE) objc.get("label").asString else null,
                             contentsType = objc.get("content_type").asString,
                             state = objc.get("state").asString,
                             size = objc.get("size").asLong,
@@ -55,12 +56,12 @@ class GitHubReleaseUtil(val user: String, val repo: String, val token: String, v
                         id = obj.get("id").asInt,
                         nodeId = obj.get("node_id").asString,
                         tagName = obj.get("tag_name").asString,
-                        targetCommitish = obj.get("target_committish").asString,
+                        targetCommitish = obj.get("target_commitish").asString,
                         name = obj.get("name").asString,
                         draft = obj.get("draft").asBoolean,
                         preRelease = obj.get("prerelease").asBoolean,
                         createdAt = obj.get("created_at").asString,
-                        publishesAt = obj.get("publishes_at").asString,
+                        publishesAt = obj.get("published_at").asString,
                         assets = assets,
                         tarballUrl = obj.get("tarball_url").asString,
                         zipballUrl = obj.get("zipball_url").asString,

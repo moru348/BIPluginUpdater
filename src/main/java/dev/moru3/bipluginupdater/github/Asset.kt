@@ -10,7 +10,7 @@ class Asset(
     override val id: Int,
     override val nodeId: String,
     override val name: String,
-    override val label: String,
+    override val label: String?,
     override val contentsType: String,
     override val state: String,
     override val size: Long,
